@@ -1,0 +1,122 @@
+file:///C:/Users/mpiza/Downloads/peepcode-git.pdf
+https://aboullaite.me/deep-dive-into-git/
+
+
+
+useful commands
+
+ git cat-file --batch-check --batch-all-objects  => lists all objects along with types and size
+
+#Git: content tracker
+
+#It tracks contents: files and directories
+
+Essentially a file system: content addressable and has a concept of versioning
+
+When Git stores a new version of a project, it stores
+a new tree – a bunch of blobs of content and a collection of pointers 
+that can be expanded back out into a full directory of files and
+subdirectories. If you want a diff between two versions, it doesn’t add
+up all the deltas, it simply looks at the two trees and runs a new diff
+on them.
+
+It is efficient about
+it – it only stores identical files and directories once and it can compress
+ and transfer its content using delta-compressed packfiles
+
+
+Git objects are the actual data of Git, the main thing that the repository 
+is made up of. There are four main object types in Git, the first
+three being the most important to really understand the main functions of Git.
+
+
+All of these types of objects are stored in the Git Object Database,
+which is kept in the Git Directory. Each object is compressed (with 
+14Zlib) and referenced by the SHA-1 value of its contents plus a small
+header. In the examples, I will use the first 6 characters of the SHA-1
+for simplicity, but the actual value is 40 characters long.
+
+
+
+The Blob
+In Git, the contents of files are stored as blobs.
+
+It is important to note that it is the contents that are stored, not the
+files. The names and modes of the files are not stored with the blob,
+just the contents.
+This means that if you have two files anywhere in your project that
+are exactly the same, even if they have different names, Git will only
+store the blob once. This also means that during repository transfers,
+such as clones or fetches, Git will only transfer the blob once, then
+expand it out into multiple files upon checkout.
+
+
+working dir                     git dir
+----------                   -------------
+
+./                                  tree: 1a738d
+--> rakefile                        blob: a874b7
+--> readme                          blob: a906cb
+--> lib/                            tree: fe8971
+---------> simplegit.rb             blob: a0a60a
+                                    commit: allbef (content has pointer to tree 1a738d)
+
+commit: allbef
+----------------
+tree 1a738d
+author Scott Chacon
+ <schacon@gmail.com> 1205602288
+committer Scott Chacon
+ <schacon@gmail.com> 1205602288
+first commit
+
+commit: a7d991
+"tree e1b3ec
+
+
+
+The tag
+
+The final type of object you will find in a Git database is the tag. This
+is an object that provides a permanent shorthand name for a particular commit. It contains an object, type, tag, tagger and a message. Normally the type is commit and the object is the SHA-1 of the
+commit you’re tagging. The tag can also be GPG signed, providing
+cryptographic integrity to a release or version.
+
+parent a11bef
+author Scott Chacon
+ <schacon@gmail.com> 1205624433
+committer Scott Chacon
+ <schacon@gmail.com> 1205624433
+my second commit, which is better than the first
+"
+
+
+
+The Tree
+Directories in Git basically correspond to trees.
+
+The Commit
+
+So, now that we can store arbitrary trees of content in Git, where
+does the ‘history’ part of ‘tree history storage system’ come in? The
+answer is the commit object.
+The commit is very simple, much like the tree. It simply points to a
+tree and keeps an author, committer, message and any parent commits that directly preceded it.
+
+
+
+The Git Data Model
+In computer science speak, the Git object data is a directed acyclic
+graph. That is, starting at any commit you can traverse its parents
+in one direction and there is no chain that begins and ends with the
+same object.
+All commit objects point to a tree and optionally to previous commits. All trees point to one or many blobs and/or trees. Given this
+simple model, we can store and retrieve vast histories of complex
+trees of arbitrarily changing content quickly and efficiently.
+
+
+
+
+
+
+
